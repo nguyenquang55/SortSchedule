@@ -1,0 +1,56 @@
+{
+  "scenarioId": "test-scenario-01",
+  "saveScenario": true,
+  "saveResult": true,
+  "schedule": {
+    "teachers": [
+      {
+        "id": 1,
+        "name": "Nguy?n Van A",
+        "specificRequirements": "C?n m�y chi?u"
+      }
+    ],
+    "rooms": [
+      {
+        "id": 1,
+        "name": "Ph�ng 101",
+        "capacity": 40,
+        "roomType": "Theory"
+      }
+    ],
+    "studentGroups": [
+      {
+        "id": 1,
+        "name": "L?p K65-A",
+        "size": 35
+      }
+    ],
+    "subjects": [
+      {
+        "id": 1,
+        "name": "To�n r?i r?c",
+        "requiredRoomType": "Theory"
+      }
+    ],
+    "timeSlots": [
+      {
+        "id": 1,
+        "dayOfWeek": 1,
+        "startTime": "07:00:00",
+        "endTime": "09:00:00"
+      }
+    ],
+    "lessons": [
+      {
+        "id": 1,
+        "teacherId": 1,
+        "studentGroupId": 1,
+        "subjectId": 1,
+        "requiredRoomType": "Theory",
+        "deliveryMode": "Offline",
+        "roomId": null,
+        "timeSlotId": null
+      }
+    ]
+  }
+}

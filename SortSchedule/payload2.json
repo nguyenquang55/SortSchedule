@@ -1,0 +1,11 @@
+﻿{
+  "scenarioId": "test",
+  "schedule": {
+    "teachers": [
+      {
+        "id": 1,
+        "name": "Teacher A"
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Domain/SortSchedule.Domain.csproj" />
+  <Project Path="Application/SortSchedule.Application.csproj" />
+  <Project Path="Infrastructure/SortSchedule.Infrastructure.csproj" />
+  <Project Path="SortSchedule/SortSchedule.csproj" />
+  <Project Path="SortSchedule.Tests/SortSchedule.Tests.csproj" />
+</Solution>
