@@ -20,13 +20,13 @@
         "id": 1,
         "name": "Phòng 101",
         "capacity": 40,
-        "roomType": "Theory"
+        "roomType": 0
       },
       {
         "id": 2,
         "name": "Phòng Máy 1",
         "capacity": 30,
-        "roomType": "Practice"
+        "roomType": 1
       }
     ],
     "studentGroups": [
@@ -45,12 +45,12 @@
       {
         "id": 1,
         "name": "Toán rời rạc",
-        "requiredRoomType": "Theory"
+        "requiredRoomType": 0
       },
       {
         "id": 2,
         "name": "Lập trình C++",
-        "requiredRoomType": "Practice"
+        "requiredRoomType": 1
       }
     ],
     "timeSlots": [
@@ -79,8 +79,8 @@
         "teacherId": 1,
         "studentGroupId": 1,
         "subjectId": 1,
-        "requiredRoomType": "Theory",
-        "deliveryMode": "Offline",
+        "requiredRoomType": 0,
+        "deliveryMode": 0,
         "roomId": null,
         "timeSlotId": null
       },
@@ -89,8 +89,8 @@
         "teacherId": 2,
         "studentGroupId": 2,
         "subjectId": 2,
-        "requiredRoomType": "Practice",
-        "deliveryMode": "Offline",
+        "requiredRoomType": 1,
+        "deliveryMode": 0,
         "roomId": null,
         "timeSlotId": null
       }

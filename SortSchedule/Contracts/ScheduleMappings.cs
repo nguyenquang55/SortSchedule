@@ -1,7 +1,6 @@
 using SortSchedule.Domain.Common;
 using SortSchedule.Domain.Entities;
 using SortSchedule.Domain.Enums;
-using SortSchedule.Extensions;
 
 namespace SortSchedule.Contracts;
 
@@ -24,7 +23,7 @@ public static class ScheduleMappings
                 Id = item.Id,
                 Name = item.Name,
                 Capacity = item.Capacity,
-                RoomType = item.RoomType.ParseStrictEnum<RoomType>(nameof(item.RoomType))
+                RoomType = item.RoomType
             }).ToList(),
             StudentGroups = dto.StudentGroups.Select(static item => new StudentGroup
             {
@@ -51,8 +50,8 @@ public static class ScheduleMappings
                 TeacherId = item.TeacherId,
                 StudentGroupId = item.StudentGroupId,
                 SubjectId = item.SubjectId,
-                RequiredRoomType = item.RequiredRoomType.ParseStrictEnum<RoomType>(nameof(item.RequiredRoomType)),
-                DeliveryMode = item.DeliveryMode.ParseStrictEnum<DeliveryMode>(nameof(item.DeliveryMode)),
+                RequiredRoomType = item.RequiredRoomType,
+                DeliveryMode = item.DeliveryMode,
                 RoomId = item.RoomId,
                 TimeSlotId = item.TimeSlotId
             }).ToList(),
@@ -77,7 +76,7 @@ public static class ScheduleMappings
                 Id = item.Id,
                 Name = item.Name,
                 Capacity = item.Capacity,
-                RoomType = item.RoomType.ToString()
+                RoomType = item.RoomType
             }).ToList(),
             StudentGroups = schedule.StudentGroups.Select(static item => new StudentGroupDto
             {
@@ -104,8 +103,8 @@ public static class ScheduleMappings
                 TeacherId = item.TeacherId,
                 StudentGroupId = item.StudentGroupId,
                 SubjectId = item.SubjectId,
-                RequiredRoomType = item.RequiredRoomType.ToString(),
-                DeliveryMode = item.DeliveryMode.ToString(),
+                RequiredRoomType = item.RequiredRoomType,
+                DeliveryMode = item.DeliveryMode,
                 RoomId = item.RoomId,
                 TimeSlotId = item.TimeSlotId
             }).ToList(),

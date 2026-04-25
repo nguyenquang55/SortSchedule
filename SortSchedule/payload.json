@@ -15,7 +15,7 @@
         "id": 1,
         "name": "Ph�ng 101",
         "capacity": 40,
-        "roomType": "Theory"
+        "roomType": 0
       }
     ],
     "studentGroups": [
@@ -29,7 +29,7 @@
       {
         "id": 1,
         "name": "To�n r?i r?c",
-        "requiredRoomType": "Theory"
+        "requiredRoomType": 0
       }
     ],
     "timeSlots": [
@@ -46,8 +46,8 @@
         "teacherId": 1,
         "studentGroupId": 1,
         "subjectId": 1,
-        "requiredRoomType": "Theory",
-        "deliveryMode": "Offline",
+        "requiredRoomType": 0,
+        "deliveryMode": 0,
         "roomId": null,
         "timeSlotId": null
       }

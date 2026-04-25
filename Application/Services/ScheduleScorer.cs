@@ -15,6 +15,7 @@ public sealed class ScheduleScorer : IScheduleScorer
         var softScore = 0;
 
         var roomById = schedule.Rooms.ToDictionary(static room => room.Id);
+        var studentGroupById = schedule.StudentGroups.ToDictionary(static group => group.Id);
 
         foreach (var lesson in schedule.Lessons)
         {
@@ -36,6 +37,11 @@ public sealed class ScheduleScorer : IScheduleScorer
 
             if (!roomById.TryGetValue(lesson.RoomId.Value, out var room) ||
                 room.RoomType != lesson.RequiredRoomType)
+            {
+                hardScore--;
+            }
+            else if (studentGroupById.TryGetValue(lesson.StudentGroupId, out var group) &&
+                     room.Capacity < group.Size)
             {
                 hardScore--;
             }

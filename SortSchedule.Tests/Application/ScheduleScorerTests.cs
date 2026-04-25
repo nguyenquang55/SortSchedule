@@ -47,4 +47,28 @@ public sealed class ScheduleScorerTests
 
         Assert.True(score.SoftScore >= 1);
     }
+
+    [Fact]
+    public void CalculateScore_WhenRoomCapacityIsExceeded_ShouldPenalizeHardScore()
+    {
+        var schedule = new Schedule
+        {
+            Teachers = [new Teacher { Id = 1, Name = "T1" }],
+            Rooms = [new Room { Id = 1, Name = "R1", Capacity = 30, RoomType = RoomType.Theory }],
+            StudentGroups = [new StudentGroup { Id = 1, Name = "G1", Size = 40 }],
+            Subjects = [new Subject { Id = 1, Name = "Math" }],
+            TimeSlots = [new TimeSlot { Id = 1, DayOfWeek = DayOfWeek.Monday, StartTime = new TimeOnly(8, 0), EndTime = new TimeOnly(9, 0) }],
+            Lessons =
+            [
+                new Lesson { Id = 1, TeacherId = 1, StudentGroupId = 1, SubjectId = 1, RequiredRoomType = RoomType.Theory, DeliveryMode = DeliveryMode.Offline, RoomId = 1, TimeSlotId = 1 }
+            ]
+        };
+
+        var scorer = new ScheduleScorer();
+
+        var score = scorer.CalculateScore(schedule);
+
+        // Expect hard score to be -1 due to room.Capacity (30) < group.Size (40)
+        Assert.Equal(-1, score.HardScore);
+    }
 }
