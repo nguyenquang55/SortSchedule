@@ -1,3 +1,5 @@
+using SortSchedule.Domain.Enums;
+
 namespace SortSchedule.Contracts;
 
 public sealed class TeacherDto
@@ -17,7 +19,7 @@ public sealed class RoomDto
 
     public int Capacity { get; init; }
 
-    public string RoomType { get; init; } = string.Empty;
+    public RoomType RoomType { get; init; }
 }
 
 public sealed class StudentGroupDto
@@ -35,7 +37,7 @@ public sealed class SubjectDto
 
     public string Name { get; init; } = string.Empty;
 
-    public string? RequiredRoomType { get; init; }
+    public RoomType? RequiredRoomType { get; init; }
 }
 
 public sealed class TimeSlotDto
@@ -59,9 +61,9 @@ public sealed class LessonDto
 
     public int SubjectId { get; init; }
 
-    public string RequiredRoomType { get; init; } = string.Empty;
+    public RoomType RequiredRoomType { get; init; }
 
-    public string DeliveryMode { get; init; } = string.Empty;
+    public DeliveryMode DeliveryMode { get; init; }
 
     public int? RoomId { get; init; }
 

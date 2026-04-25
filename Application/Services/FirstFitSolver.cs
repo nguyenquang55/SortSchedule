@@ -24,11 +24,14 @@ public sealed class FirstFitSolver(IScheduleScorer scorer) : IScheduleSolver
             return solution;
         }
 
+        var roomById = solution.Rooms.ToDictionary(static r => r.Id);
+        var studentGroupById = solution.StudentGroups.ToDictionary(static g => g.Id);
+
         foreach (var lesson in solution.Lessons.OrderBy(static item => item.Id))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (lesson.RoomId.HasValue && lesson.TimeSlotId.HasValue && !HasHardConflict(solution, lesson))
+            if (lesson.RoomId.HasValue && lesson.TimeSlotId.HasValue && !HasHardConflict(solution, lesson, roomById, studentGroupById))
             {
                 continue;
             }
@@ -41,7 +44,7 @@ public sealed class FirstFitSolver(IScheduleScorer scorer) : IScheduleSolver
                     lesson.RoomId = room.Id;
                     lesson.TimeSlotId = slot.Id;
 
-                    if (!HasHardConflict(solution, lesson))
+                    if (!HasHardConflict(solution, lesson, roomById, studentGroupById))
                     {
                         assigned = true;
                         break;
@@ -65,7 +68,7 @@ public sealed class FirstFitSolver(IScheduleScorer scorer) : IScheduleSolver
         return solution;
     }
 
-    private static bool HasHardConflict(Schedule schedule, Lesson target)
+    private static bool HasHardConflict(Schedule schedule, Lesson target, IReadOnlyDictionary<int, Room> roomById, IReadOnlyDictionary<int, StudentGroup> studentGroupById)
     {
         if (!target.TimeSlotId.HasValue || !target.RoomId.HasValue)
         {
@@ -90,6 +93,14 @@ public sealed class FirstFitSolver(IScheduleScorer scorer) : IScheduleSolver
             {
                 return true;
             }
+        }
+
+        if (target.RoomId.HasValue &&
+            roomById.TryGetValue(target.RoomId.Value, out var room) &&
+            studentGroupById.TryGetValue(target.StudentGroupId, out var group) &&
+            room.Capacity < group.Size)
+        {
+            return true;
         }
 
         return false;

@@ -1,3 +1,5 @@
+using SortSchedule.Domain.Enums;
+
 namespace SortSchedule.Domain.Entities;
 
 public sealed class Subject
@@ -6,5 +8,5 @@ public sealed class Subject
 
     public string Name { get; init; } = string.Empty;
 
-    public string? RequiredRoomType { get; init; }
+    public RoomType? RequiredRoomType { get; init; }
 }
