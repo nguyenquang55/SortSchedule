@@ -1,5 +1,4 @@
 using SortSchedule.Application.Abstractions;
-using SortSchedule.Application.Entities;
 using SortSchedule.Application.Options;
 using SortSchedule.Domain.Common;
 using SortSchedule.Domain.Entities;

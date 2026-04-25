@@ -1,4 +1,4 @@
-namespace SortSchedule.Application.Entities;
+namespace SortSchedule.Application.Options;
 
 public enum MoveKind
 {
