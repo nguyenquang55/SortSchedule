@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace SortSchedule.Extensions;
+namespace SortSchedule.Infrastructure.Extensions;
 
 public static class EnumParser
 {

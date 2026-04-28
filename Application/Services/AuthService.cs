@@ -2,6 +2,8 @@ using FluentValidation;
 using SortSchedule.Application.Abstractions.Auth;
 using SortSchedule.Application.DTOs.Auth;
 using SortSchedule.Domain.Entities;
+using Shared.Common;
+using System.Net;
 
 namespace SortSchedule.Application.Services;
 
@@ -20,7 +22,7 @@ public sealed class AuthService(
     private readonly IValidator<LoginRequest> _loginValidator = loginValidator;
     private readonly IValidator<RefreshTokenRequest> _refreshValidator = refreshValidator;
 
-    public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken ct = default)
+    public async Task<Result<AuthResponse>> RegisterAsync(RegisterRequest request, CancellationToken ct = default)
     {
         await _registerValidator.ValidateAndThrowAsync(request, ct);
 
@@ -28,7 +30,7 @@ public sealed class AuthService(
         var exists = await _userRepository.ExistsAsync(normalizedEmail, ct);
         if (exists)
         {
-            throw new InvalidOperationException("Email is already in use.");
+            return Result<AuthResponse>.FailureResult("Email is already in use.", "EMAIL_ALREADY_EXISTS", HttpStatusCode.Conflict);
         }
 
         var user = new AppUser
@@ -38,8 +40,11 @@ public sealed class AuthService(
             PasswordHash = _passwordHasher.Hash(request.Password)
         };
 
-        var studentRole = await _userRepository.GetRoleByNameAsync("Student", ct)
-            ?? throw new InvalidOperationException("Default role 'Student' is missing.");
+        var studentRole = await _userRepository.GetRoleByNameAsync("Student", ct);
+        if (studentRole is null)
+        {
+            return Result<AuthResponse>.FailureResult("Default role 'Student' is missing.", "ROLE_MISSING", HttpStatusCode.InternalServerError);
+        }
 
         user.UserRoles.Add(new UserRole
         {
@@ -64,7 +69,7 @@ public sealed class AuthService(
         await _userRepository.AddAsync(user, ct);
         await _userRepository.SaveChangesAsync(ct);
 
-        return new AuthResponse
+        return Result<AuthResponse>.SuccessResult(new AuthResponse
         {
             AccessToken = accessToken,
             RefreshToken = rawToken,
@@ -72,22 +77,25 @@ public sealed class AuthService(
             UserName = user.UserName,
             Email = user.Email,
             Roles = roles
-        };
+        }, "Registration successful", HttpStatusCode.Created);
     }
 
-    public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken ct = default)
+    public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken ct = default)
     {
         try
         {
             await _loginValidator.ValidateAndThrowAsync(request, ct);
 
             var normalizedEmail = request.Email.Trim().ToLowerInvariant();
-            var user = await _userRepository.GetByEmailAsync(normalizedEmail, ct)
-                ?? throw new UnauthorizedAccessException("Invalid email or password.");
+            var user = await _userRepository.GetByEmailAsync(normalizedEmail, ct);
+            if (user is null)
+            {
+                return Result<AuthResponse>.FailureResult("Invalid email or password.", "INVALID_CREDENTIALS", HttpStatusCode.Unauthorized);
+            }
 
             if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
             {
-                throw new UnauthorizedAccessException("Invalid email or password.");
+                return Result<AuthResponse>.FailureResult("Invalid email or password.", "INVALID_CREDENTIALS", HttpStatusCode.Unauthorized);
             }
 
             await _userRepository.RevokeAllRefreshTokensAsync(user.Id, ct);
@@ -108,7 +116,7 @@ public sealed class AuthService(
 
             await _userRepository.SaveChangesAsync(ct);
 
-            return new AuthResponse
+            return Result<AuthResponse>.SuccessResult(new AuthResponse
             {
                 AccessToken = accessToken,
                 RefreshToken = rawToken,
@@ -116,38 +124,48 @@ public sealed class AuthService(
                 UserName = user.UserName,
                 Email = user.Email,
                 Roles = roles
-            };
+            });
 
         }
-        catch (ValidationException ex)
+        catch (ValidationException)
         {
-            throw new UnauthorizedAccessException("Invalid email or password.", ex);
+            return Result<AuthResponse>.FailureResult("Validation failed.", "VALIDATION_ERROR", HttpStatusCode.BadRequest);
+        }
+        catch (Exception ex)
+        {
+             return Result<AuthResponse>.FailureResult(ex.Message, "INTERNAL_ERROR", HttpStatusCode.InternalServerError);
         }
     }
 
-    public async Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken ct = default)
+    public async Task<Result<AuthResponse>> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken ct = default)
     {
         await _refreshValidator.ValidateAndThrowAsync(request, ct);
 
         var validationResult = _tokenService.Validate(request.AccessToken);
         if (!validationResult.IsValid || validationResult.UserId is null)
         {
-            throw new UnauthorizedAccessException(validationResult.Error ?? "Invalid access token.");
+            return Result<AuthResponse>.FailureResult(validationResult.Error ?? "Invalid access token.", "INVALID_TOKEN", HttpStatusCode.Unauthorized);
         }
 
         var (_, inputHash) = BuildHashOnly(request.RefreshToken);
-        var currentToken = await _userRepository.GetActiveRefreshTokenByHashAsync(inputHash, ct)
-            ?? throw new UnauthorizedAccessException("Refresh token is invalid or expired.");
+        var currentToken = await _userRepository.GetActiveRefreshTokenByHashAsync(inputHash, ct);
+        if (currentToken is null)
+        {
+            return Result<AuthResponse>.FailureResult("Refresh token is invalid or expired.", "INVALID_REFRESH_TOKEN", HttpStatusCode.Unauthorized);
+        }
 
         if (currentToken.UserId != validationResult.UserId.Value)
         {
-            throw new UnauthorizedAccessException("Refresh token does not belong to the requested user.");
+            return Result<AuthResponse>.FailureResult("Refresh token does not belong to the requested user.", "ACCESS_DENIED", HttpStatusCode.Forbidden);
         }
 
         currentToken.RevokedAtUtc = DateTime.UtcNow;
 
-        var user = await _userRepository.GetByIdWithRolesAsync(validationResult.UserId.Value, ct)
-            ?? throw new UnauthorizedAccessException("User no longer exists.");
+        var user = await _userRepository.GetByIdWithRolesAsync(validationResult.UserId.Value, ct);
+        if (user is null)
+        {
+            return Result<AuthResponse>.FailureResult("User no longer exists.", "USER_NOT_FOUND", HttpStatusCode.Unauthorized);
+        }
 
         var roles = user.UserRoles.Select(static ur => ur.Role.Name).ToArray();
         var accessToken = _tokenService.GenerateAccessToken(user, roles);
@@ -163,7 +181,7 @@ public sealed class AuthService(
 
         await _userRepository.SaveChangesAsync(ct);
 
-        return new AuthResponse
+        return Result<AuthResponse>.SuccessResult(new AuthResponse
         {
             AccessToken = accessToken,
             RefreshToken = newRawToken,
@@ -171,7 +189,7 @@ public sealed class AuthService(
             UserName = user.UserName,
             Email = user.Email,
             Roles = roles
-        };
+        });
     }
 
     private (string RawToken, string TokenHash) BuildHashOnly(string rawToken)

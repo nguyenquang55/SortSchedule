@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\SortSchedule.Domain.csproj" />
+    <ProjectReference Include="..\Share\SortSchedule.Share\SortSchedule.Share.csproj" />
   </ItemGroup>
 
 </Project>

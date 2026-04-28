@@ -2,7 +2,7 @@ using SortSchedule.Domain.Common;
 using SortSchedule.Domain.Entities;
 using SortSchedule.Domain.Enums;
 
-namespace SortSchedule.Contracts;
+namespace SortSchedule.Application.DTOs.Schedules;
 
 public static class ScheduleMappings
 {

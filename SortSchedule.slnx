@@ -1,7 +1,8 @@
 <Solution>
-  <Project Path="Domain/SortSchedule.Domain.csproj" />
   <Project Path="Application/SortSchedule.Application.csproj" />
+  <Project Path="Domain/SortSchedule.Domain.csproj" />
   <Project Path="Infrastructure/SortSchedule.Infrastructure.csproj" />
-  <Project Path="SortSchedule/SortSchedule.csproj" />
+  <Project Path="Share/SortSchedule.Share/SortSchedule.Share.csproj" Id="42b4cba8-354b-4078-b94b-1a8adc286ca0" />
   <Project Path="SortSchedule.Tests/SortSchedule.Tests.csproj" />
+  <Project Path="SortSchedule/SortSchedule.csproj" />
 </Solution>

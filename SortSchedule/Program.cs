@@ -1,5 +1,5 @@
 using SortSchedule.Infrastructure.DI;
-using SortSchedule.Middleware;
+using SortSchedule.Infrastructure.Middleware;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);

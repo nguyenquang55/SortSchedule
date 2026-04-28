@@ -1,5 +1,5 @@
 using SortSchedule.Domain.Enums;
-using SortSchedule.Extensions;
+using SortSchedule.Infrastructure.Extensions;
 
 namespace SortSchedule.Tests.Contracts;
 

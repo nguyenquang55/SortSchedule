@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Application\SortSchedule.Application.csproj" />
     <ProjectReference Include="..\Domain\SortSchedule.Domain.csproj" />
     <ProjectReference Include="..\Infrastructure\SortSchedule.Infrastructure.csproj" />
+    <ProjectReference Include="..\Share\SortSchedule.Share\SortSchedule.Share.csproj" />
   </ItemGroup>
 
 </Project>
